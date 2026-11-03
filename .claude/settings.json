@@ -1,0 +1,11 @@
+{
+  "model": "kr-codegen-gemini",
+  "env": {
+    "ANTHROPIC_MODEL": "kr-codegen-gemini",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "kr-codegen-gemini",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "kr-codegen-gemini",
+    "ANTHROPIC_SMALL_FAST_MODEL": "kr-codegen-gemini",
+    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "1000000",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "600000"
+  }
+}
