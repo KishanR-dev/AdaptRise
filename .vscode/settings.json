@@ -1,0 +1,6 @@
+{
+  "claudeCode.environmentVariables": [
+    { "name": "ANTHROPIC_MODEL", "value": "kr-codegen-gemini" },
+    { "name": "CLAUDE_CODE_MAX_CONTEXT_TOKENS", "value": "1000000" }
+  ]
+}

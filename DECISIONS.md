@@ -171,3 +171,25 @@
 * **Consequences**:
   * Positive: Prevents compounding sleep deprivation from sleep disruptions while supporting genuine early rhythm shifts.
   * Negative: Requires accurate duration data from Health Connect.
+
+---
+
+### D-017: Development Instructions and Standardized Validation Commands
+* **Date**: 2026-11-04
+* **Context**: Centralized developer instructions and automated command specifications are required for Copilot, Claude, and local verification loops.
+* **Decision**: Establish `.github/copilot-instructions.md` and `CLAUDE.md` specifying architectural conventions, dark-first design principles, local privacy constraints, and standard PowerShell validation commands (`flutter analyze`, `dart format`, `flutter test --coverage`, `.\gradlew.bat :app:assembleDebug`, `.\gradlew.bat :app:testDebugUnitTest`, `.\gradlew.bat :wear:assembleDebug`, `.\gradlew.bat :wear:testDebugUnitTest`, `.\gradlew.bat ktlintCheck detekt`).
+* **Consequences**:
+  * Positive: Unifies verification commands across tools and ensures reproducible test output.
+  * Negative: Requires updating instruction files if toolchain versions or verification scripts change.
+
+---
+
+### D-018: Shared Application ID and Signing Configuration for Wear Data Layer
+* **Date**: 2026-11-04
+* **Context**: Google Play Services Wearable Data Layer API mandates that the phone application and the Wear OS companion application share the exact same `applicationId` (`dev.kishanr.adaptrise`) and signing key in order to communicate across Bluetooth and Wi-Fi transports.
+* **Decision**: Set `applicationId = "dev.kishanr.adaptrise"` for both `:app` and `:wear` modules in `android/settings.gradle(.kts)`, share the debug and release signing configuration, and manage `:wear` as a subproject within the `android/` directory (`android/wear`).
+* **Consequences**:
+  * Positive: Guarantees node discovery and message routing across `MessageClient` and `ChannelClient`.
+  * Negative: Requires Wear OS APK to be packaged alongside or installed with matching signatures in debug testing.
+
+
