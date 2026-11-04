@@ -85,7 +85,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     flutter test test/engine/shift_calculator_test.dart
     ```
 
-- [ ] **2.3 Day-2 Sensor Calibration & Configurable Parameters**
+- [x] **2.3 Day-2 Sensor Calibration & Configurable Parameters**
   - **Acceptance Criteria**: Analyze `t1_sensor_recording.csv`; calibrate baseline resting variance and HR spike ratios; expose parameters in `DetectorConfig.kt` and `detector_preferences.dart` with defaults marked verified against sample.
   - **PowerShell Commands**:
     ```powershell
