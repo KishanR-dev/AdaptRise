@@ -3,6 +3,7 @@ package dev.kishanr.adaptrise.wear
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
 import dev.kishanr.adaptrise.alarm.detector.SensorEpochPacket
+import dev.kishanr.adaptrise.alarm.detector.SmartWakeDetector
 
 class PhoneWearableListenerService : WearableListenerService() {
 
@@ -15,7 +16,12 @@ class PhoneWearableListenerService : WearableListenerService() {
         var latestReceivedPacket: SensorEpochPacket? = null
             private set
 
+        @Volatile
+        var lastAlarmAction: String? = null
+            private set
+
         private val epochListeners = mutableListOf<(SensorEpochPacket) -> Unit>()
+        private val alarmActionListeners = mutableListOf<(String) -> Unit>()
 
         @Synchronized
         fun addEpochListener(listener: (SensorEpochPacket) -> Unit) {
@@ -28,9 +34,21 @@ class PhoneWearableListenerService : WearableListenerService() {
         }
 
         @Synchronized
+        fun addAlarmActionListener(listener: (String) -> Unit) {
+            alarmActionListeners.add(listener)
+        }
+
+        @Synchronized
+        fun removeAlarmActionListener(listener: (String) -> Unit) {
+            alarmActionListeners.remove(listener)
+        }
+
+        @Synchronized
         fun clearEpochListeners() {
             epochListeners.clear()
+            alarmActionListeners.clear()
             latestReceivedPacket = null
+            lastAlarmAction = null
         }
     }
 
@@ -48,6 +66,16 @@ class PhoneWearableListenerService : WearableListenerService() {
                     android.util.Log.e("PhoneWearableListener", "Failed to parse sensor epoch packet", e)
                 }
             }
+            PATH_ALARM_DISMISSED -> {
+                lastAlarmAction = "DISMISSED"
+                SmartWakeDetector.dismissAlarm(this)
+                notifyAlarmActionListeners("DISMISSED")
+            }
+            PATH_ALARM_SNOOZED -> {
+                lastAlarmAction = "SNOOZED"
+                SmartWakeDetector.dismissAlarm(this)
+                notifyAlarmActionListeners("SNOOZED")
+            }
         }
     }
 
@@ -55,6 +83,13 @@ class PhoneWearableListenerService : WearableListenerService() {
     private fun notifyEpochListeners(packet: SensorEpochPacket) {
         for (listener in epochListeners) {
             listener(packet)
+        }
+    }
+
+    @Synchronized
+    private fun notifyAlarmActionListeners(action: String) {
+        for (listener in alarmActionListeners) {
+            listener(action)
         }
     }
 }

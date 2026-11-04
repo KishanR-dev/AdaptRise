@@ -118,7 +118,7 @@ All automated tests and builds must be executed and pasted into agent reports be
 
 ## Phase 3: Day 3 Integration & UI Polish (Deadline: Fri 6 Nov 2026)
 
-- [ ] **3.1 Wear OS Custom Alarm Face & Progressive Haptics**
+- [x] **3.1 Wear OS Custom Alarm Face & Progressive Haptics**
   - **Acceptance Criteria**: Compose for Wear OS alarm face displays ambient amber glow, swipe-to-dismiss, tap-to-snooze; ramps vibration smoothly from 20% to 100% over 60 seconds; syncs dismiss/snooze to phone via Data Layer.
   - **PowerShell Commands**:
     ```powershell

@@ -3,6 +3,7 @@ package dev.kishanr.adaptrise.wear.service
 import android.content.Intent
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
+import dev.kishanr.adaptrise.wear.presentation.alarm.WearAlarmActivity
 
 class WearDataLayerListenerService : WearableListenerService() {
 
@@ -31,6 +32,12 @@ class WearDataLayerListenerService : WearableListenerService() {
                 // Stop streaming when alarm fires
                 val serviceIntent = Intent(this, WearSensorStreamingService::class.java)
                 stopService(serviceIntent)
+
+                // Launch alarm activity with progressive haptics
+                val alarmIntent = Intent(this, WearAlarmActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                startActivity(alarmIntent)
             }
         }
     }
