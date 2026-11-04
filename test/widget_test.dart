@@ -1,30 +1,81 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:adaptrise/data/local/database.dart';
+import 'package:adaptrise/data/platform/native_alarm_gateway.dart';
+import 'package:adaptrise/data/platform/pigeon_api.g.dart';
 import 'package:adaptrise/main.dart';
 
+class FakeNativeAlarmHostApi extends NativeAlarmHostApi {
+  AlarmScheduleRequest? lastRequest;
+
+  @override
+  Future<void> scheduleAdaptiveAlarm(AlarmScheduleRequest request) async {
+    lastRequest = request;
+  }
+
+  @override
+  Future<void> cancelScheduledAlarm() async {}
+
+  @override
+  Future<void> triggerStockBackupAlarm(int deadlineEpochMs) async {}
+
+  @override
+  Future<HealthSleepSession?> getLastSleepSession() async => null;
+
+  @override
+  Future<bool> checkPermissionsStatus() async => true;
+
+  @override
+  Future<void> requestRequiredPermissions() async {}
+
+  @override
+  Future<void> exportT1TelemetryData() async {}
+}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('AdaptRiseApp navigation shell smoke test', (
+    WidgetTester tester,
+  ) async {
+    final database = AppDatabase(NativeDatabase.memory());
+    final fakeHostApi = FakeNativeAlarmHostApi();
+    final gateway = NativeAlarmGateway(fakeHostApi);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      AdaptRiseApp(database: database, nativeGateway: gateway),
+    );
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify TimelineScreen is visible by default
+    expect(find.text('Sleep-Shift Timeline'), findsOneWidget);
+    expect(find.text('Timeline'), findsOneWidget);
+    expect(find.text('Monitor'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Tap Monitor tab
+    await tester.tap(find.text('Monitor'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wake Monitor & Diagnostics'), findsOneWidget);
+
+    // Tap Settings tab
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Stock Clock Backup Alarm'), findsOneWidget);
+
+    // Toggle switch in settings
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(fakeHostApi.lastRequest, isNotNull);
+    expect(fakeHostApi.lastRequest!.enableSystemBackupAlarm, isTrue);
+
+    // Rapid navigation back to Timeline
+    await tester.tap(find.text('Timeline'));
+    await tester.pumpAndSettle();
+    expect(find.text('Sleep-Shift Timeline'), findsOneWidget);
+
+    await database.close();
   });
 }

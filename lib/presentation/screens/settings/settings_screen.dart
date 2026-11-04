@@ -66,7 +66,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     Switch(
                       value: _backupAlarmEnabled,
-                      activeThumbColor: const Color(0xFFFF9E3B), // Amber dawn accent
+                      activeThumbColor: const Color(
+                        0xFFFF9E3B,
+                      ), // Amber dawn accent
                       onChanged: (val) {
                         setState(() {
                           _backupAlarmEnabled = val;
