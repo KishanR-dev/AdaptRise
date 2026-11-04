@@ -132,7 +132,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat :app:testDebugUnitTest --tests "*ExactAlarmSchedulerTest*"
     ```
 
-- [ ] **3.3 Sleep-Shift Timeline Screen ("Obsidian & Amber Dawn")**
+- [x] **3.3 Sleep-Shift Timeline Screen ("Obsidian & Amber Dawn")**
   - **Acceptance Criteria**: High-contrast dark theme; displays Target vs. Actual cards, delta tags (`+25m`, `-15m`), and engine shift notes with tabular typography.
   - **PowerShell Commands**:
     ```powershell
