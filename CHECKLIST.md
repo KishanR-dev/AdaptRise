@@ -37,7 +37,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat :app:testDebugUnitTest --tests "*HealthConnectBridgeTest*"
     ```
 
-- [ ] **1.5 Risk Spike R2: Wear Data Layer Streaming & Raw Telemetry Logger**
+- [x] **1.5 Risk Spike R2: Wear Data Layer Streaming & Raw Telemetry Logger**
   - **Acceptance Criteria**: Galaxy Watch 4 streams 5-second `SensorEpochPacket` objects across Data Layer while phone is locked; watch raw recorder outputs `t1_sensor_recording.csv` (accelerometer magnitude and HR) for Day-2 calibration.
   - **PowerShell Commands**:
     ```powershell

@@ -11,7 +11,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import com.google.android.gms.wearable.Wearable
 import dev.kishanr.adaptrise.wear.R
+import dev.kishanr.adaptrise.wear.sensor.EpochWindowAccumulator
+import dev.kishanr.adaptrise.wear.sensor.RawTelemetryRecorder
+import dev.kishanr.adaptrise.wear.sensor.SensorCollector
+import java.io.File
+import java.nio.charset.StandardCharsets
 
 class WearSensorStreamingService : Service() {
 
@@ -19,11 +25,15 @@ class WearSensorStreamingService : Service() {
     private var stopHandler: Handler? = null
     private var stopRunnable: Runnable? = null
 
+    private var sensorCollector: SensorCollector? = null
+    private var epochAccumulator: EpochWindowAccumulator? = null
+    private var rawTelemetryRecorder: RawTelemetryRecorder? = null
+
     companion object {
         const val CHANNEL_ID = "wear_sensor_streaming_channel"
         const val NOTIFICATION_ID = 1001
         const val EXTRA_TIMEOUT_MS = "extra_timeout_ms"
-        // Configurable wake window duration with teardown safety margin
+        const val PATH_SENSOR_EPOCH = "/adapt_rise/sensor/epoch"
         const val WAKE_WINDOW_DURATION_MINUTES = 30
         const val SAFETY_BUFFER_MINUTES = 5
         const val DEFAULT_TIMEOUT_MS = (WAKE_WINDOW_DURATION_MINUTES + SAFETY_BUFFER_MINUTES).toLong() * 60L * 1000L
@@ -32,6 +42,29 @@ class WearSensorStreamingService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+
+        epochAccumulator = EpochWindowAccumulator(windowDurationSeconds = 5) { packet ->
+            sendEpochPacketToPhone(packet.toJson())
+        }
+
+        val logFile = File(getExternalFilesDir(null), "t1_sensor_recording.csv")
+        rawTelemetryRecorder = RawTelemetryRecorder(logFile).apply {
+            startRecording()
+        }
+
+        sensorCollector = SensorCollector(
+            context = this,
+            onAccelerometerSample = { timestamp, x, y, z ->
+                epochAccumulator?.addAccelerometerSample(timestamp, x, y, z)
+                rawTelemetryRecorder?.recordAccelerometer(timestamp, x, y, z)
+            },
+            onHeartRateSample = { timestamp, bpm ->
+                epochAccumulator?.addHeartRateSample(timestamp, bpm)
+                rawTelemetryRecorder?.recordHeartRate(timestamp, bpm)
+            }
+        ).apply {
+            startCollecting()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -78,6 +111,15 @@ class WearSensorStreamingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        sensorCollector?.stopCollecting()
+        sensorCollector = null
+
+        epochAccumulator?.flush()
+        epochAccumulator = null
+
+        rawTelemetryRecorder?.stopRecording()
+        rawTelemetryRecorder = null
+
         stopRunnable?.let { stopHandler?.removeCallbacks(it) }
         wakeLock?.let {
             if (it.isHeld) {
@@ -85,6 +127,19 @@ class WearSensorStreamingService : Service() {
             }
         }
         wakeLock = null
+    }
+
+    private fun sendEpochPacketToPhone(jsonPayload: String) {
+        val bytes = jsonPayload.toByteArray(StandardCharsets.UTF_8)
+        try {
+            val messageClient = Wearable.getMessageClient(this)
+            val nodeClient = Wearable.getNodeClient(this)
+            nodeClient.connectedNodes.addOnSuccessListener { nodes ->
+                for (node in nodes) {
+                    messageClient.sendMessage(node.id, PATH_SENSOR_EPOCH, bytes)
+                }
+            }
+        } catch (_: Exception) {}
     }
 
     private fun createNotificationChannel() {
