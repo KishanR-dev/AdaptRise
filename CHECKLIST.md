@@ -6,7 +6,7 @@ All automated tests and builds must be executed and pasted into agent reports be
 
 ## Phase 1: Day 1 Scaffold & Risk Spikes (Deadline: Wed 4 Nov 2026)
 
-- [ ] **1.1 Workspace Scaffolding & CI Baseline**
+- [x] **1.1 Workspace Scaffolding & CI Baseline**
   - **Acceptance Criteria**: Flutter application initializes under package `dev.kishanr.adaptrise`; Wear OS module configured with Jetpack Compose for Wear OS; GitHub Actions workflow passes `flutter analyze` and `dart format`.
   - **PowerShell Commands**:
     ```powershell
@@ -15,7 +15,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     flutter analyze
     ```
 
-- [ ] **1.2 Pigeon IPC Interface Generation**
+- [x] **1.2 Pigeon IPC Interface Generation**
   - **Acceptance Criteria**: `pigeons/messages.dart` generates `lib/data/platform/pigeon_api.g.dart` and `android/app/src/main/kotlin/dev/kishanr/adaptrise/bridge/PigeonApi.g.kt` without compilation errors or warnings.
   - **PowerShell Commands**:
     ```powershell
@@ -23,14 +23,14 @@ All automated tests and builds must be executed and pasted into agent reports be
     git status --porcelain
     ```
 
-- [ ] **1.3 Wear OS Companion Scaffold with Health FGS**
+- [x] **1.3 Wear OS Companion Scaffold with Health FGS**
   - **Acceptance Criteria**: Wear OS project configures `WearSensorStreamingService` declaring `android:foregroundServiceType="health"` with `BODY_SENSORS` and `WAKE_LOCK` permissions; builds cleanly.
   - **PowerShell Commands**:
     ```powershell
     .\gradlew.bat :wear:assembleDebug
     ```
 
-- [ ] **1.4 Risk Spike R1: Health Connect Ingress**
+- [x] **1.4 Risk Spike R1: Health Connect Ingress**
   - **Acceptance Criteria**: `HealthConnectBridge.kt` queries Health Connect on S24 Ultra. Logs verify if `SleepSessionRecord.Stage` data is returned by Samsung Health or only start/end timestamps.
   - **PowerShell Commands**:
     ```powershell
