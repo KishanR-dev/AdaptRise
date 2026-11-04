@@ -93,14 +93,14 @@ All automated tests and builds must be executed and pasted into agent reports be
     # Or Kotlin analysis harness
     ```
 
-- [ ] **2.4 Native Kotlin Smart Wake Window Detector**
+- [x] **2.4 Native Kotlin Smart Wake Window Detector**
   - **Acceptance Criteria**: `SmartWakeDetector.kt` runs inside `WakeWindowForegroundService`; enforces quarantine period `[VERIFY]`; evaluates configurable motion variance `[VERIFY]` and HR increase `[VERIFY]` across consecutive epochs; triggers early on light sleep; falls back to hard deadline.
   - **PowerShell Commands**:
     ```powershell
     .\gradlew.bat :app:testDebugUnitTest --tests "*SmartWakeDetectorTest*"
     ```
 
-- [ ] **2.5 Recorded Sample Replay Test Suite**
+- [x] **2.5 Recorded Sample Replay Test Suite**
   - **Acceptance Criteria**: Unit tests feed recorded epoch timeseries into `SmartWakeDetector`; verifies zero false alarms during deep sleep quiet periods and reliable triggering during wake movement epochs.
   - **PowerShell Commands**:
     ```powershell

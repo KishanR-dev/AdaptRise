@@ -11,6 +11,77 @@ import android.media.RingtoneManager
 import android.os.Build
 import dev.kishanr.adaptrise.alarm.FullScreenAlarmActivity
 
+enum class TriggerDecision {
+    SUPPRESSED_QUARANTINE,
+    NO_TRIGGER,
+    TRIGGER_MOTION,
+    TRIGGER_HR,
+    TRIGGER_COMPOSITE
+}
+
+class SmartWakeDetectorState(
+    private val windowStartEpochMs: Long,
+    private val config: DetectorConfig = DetectorConfig.DEFAULT
+) {
+    private val quarantineDurationMs = config.quarantineMinutes * 60 * 1000L
+    private var baselineHrSum = 0.0
+    private var baselineHrCount = 0
+    private var consecutiveMotionCount = 0
+    private var consecutiveHrCount = 0
+
+    fun getRestingBaselineHr(): Float? {
+        return if (baselineHrCount > 0) (baselineHrSum / baselineHrCount).toFloat() else null
+    }
+
+    fun evaluate(packet: SensorEpochPacket, currentTimestampMs: Long): TriggerDecision {
+        val elapsedMs = currentTimestampMs - windowStartEpochMs
+        val inQuarantine = elapsedMs < quarantineDurationMs
+
+        val hr = packet.meanHeartRateBpm.toFloat()
+        // Accumulate baseline during quarantine or initial rest
+        if (hr > 0f && (inQuarantine || baselineHrCount == 0)) {
+            baselineHrSum += hr
+            baselineHrCount++
+        }
+
+        if (inQuarantine) {
+            return TriggerDecision.SUPPRESSED_QUARANTINE
+        }
+
+        var motionTriggered = false
+        var hrTriggered = false
+
+        if (packet.motionVariance > config.motionVarianceThreshold) {
+            consecutiveMotionCount++
+        } else {
+            consecutiveMotionCount = 0
+        }
+        if (consecutiveMotionCount >= config.consecutiveEpochsRequired) {
+            motionTriggered = true
+        }
+
+        val restingHr = getRestingBaselineHr()
+        if (hr > 0f && restingHr != null && restingHr > 0f) {
+            val ratio = hr / restingHr
+            if (ratio >= config.hrSpikeRatioThreshold) {
+                consecutiveHrCount++
+            } else {
+                consecutiveHrCount = 0
+            }
+            if (consecutiveHrCount >= config.consecutiveEpochsRequired) {
+                hrTriggered = true
+            }
+        }
+
+        return when {
+            motionTriggered && hrTriggered -> TriggerDecision.TRIGGER_COMPOSITE
+            motionTriggered -> TriggerDecision.TRIGGER_MOTION
+            hrTriggered -> TriggerDecision.TRIGGER_HR
+            else -> TriggerDecision.NO_TRIGGER
+        }
+    }
+}
+
 object SmartWakeDetector {
 
     const val EXTRA_TRIGGER_REASON = "extra_trigger_reason"
@@ -60,7 +131,6 @@ object SmartWakeDetector {
 
         notificationManager.notify(ALARM_NOTIFICATION_ID, notification)
 
-        // Also launch directly if device is interactive or permitted
         try {
             val directIntent = Intent(context, FullScreenAlarmActivity::class.java).apply {
                 putExtra(EXTRA_TRIGGER_REASON, reason)
