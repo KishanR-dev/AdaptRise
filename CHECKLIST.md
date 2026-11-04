@@ -107,7 +107,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat :app:testDebugUnitTest --tests "*DetectorReplayTest*"
     ```
 
-- [ ] **2.6 Drift / SQLite Local Database Layer**
+- [x] **2.6 Drift / SQLite Local Database Layer**
   - **Acceptance Criteria**: Stores sleep targets, shift notes, history sessions, and detector settings locally. Zero cloud calls.
   - **PowerShell Commands**:
     ```powershell
