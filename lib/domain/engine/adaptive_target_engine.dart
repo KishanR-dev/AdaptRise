@@ -1,3 +1,4 @@
+import 'package:adaptrise/domain/engine/shift_calculator.dart';
 import 'package:adaptrise/domain/models/shift_decision_note.dart';
 
 class EngineResult {
@@ -49,12 +50,9 @@ class AdaptiveTargetEngine {
           ? deltaOversleep
           : maxDailyShiftMinutes;
       nextTarget = currentTargetWakeTime.add(Duration(minutes: shift));
-      decisionNote = ShiftDecisionNote(
-        rule: ShiftDecisionRule.caseAOverslept,
-        shiftMinutes: shift,
+      decisionNote = ShiftCalculator.generateCaseANote(
         deltaOversleepMinutes: deltaOversleep,
-        note:
-            'Overslept by $deltaOversleep min. Eased target wake time by +$shift min to prevent circadian disruption.',
+        shiftMinutes: shift,
       );
     }
     // --- CASE B.2: Substantial Early Awakening (Delta < -maxDailyShiftMinutes) ---
@@ -75,14 +73,10 @@ class AdaptiveTargetEngine {
         final actualShift = targetMinutesFromMidnight - finalMinutes;
 
         nextTarget = _dateTimeWithMinutes(currentTargetWakeTime, finalMinutes);
-
-        final hoursRest = (actualDurationMinutes / 60.0).toStringAsFixed(1);
-        decisionNote = ShiftDecisionNote(
-          rule: ShiftDecisionRule.caseB2aEarlyFullRest,
-          shiftMinutes: -actualShift,
+        decisionNote = ShiftCalculator.generateCaseB2aNote(
           deltaOversleepMinutes: deltaOversleep,
-          note:
-              'Spontaneous early wake with full rest ($hoursRest hrs). Advancing wake target by -$actualShift min toward goal.',
+          shiftMinutes: -actualShift,
+          actualDurationMinutes: actualDurationMinutes,
         );
       } else {
         // Case B.2b: Insufficient Rest / Disturbance (D_actual < D_min)
@@ -94,12 +88,10 @@ class AdaptiveTargetEngine {
         final actualShift = targetMinutesFromMidnight - finalMinutes;
 
         nextTarget = _dateTimeWithMinutes(currentTargetWakeTime, finalMinutes);
-        decisionNote = ShiftDecisionNote(
-          rule: ShiftDecisionRule.caseB2bEarlyShortRest,
-          shiftMinutes: -actualShift,
+        decisionNote = ShiftCalculator.generateCaseB2bNote(
           deltaOversleepMinutes: deltaOversleep,
-          note:
-              'Early wake recorded with short sleep (<7h). Applied standard gentle ramp (-$actualShift min) to protect sleep reserve.',
+          shiftMinutes: -actualShift,
+          actualDurationMinutes: actualDurationMinutes,
         );
       }
     }
@@ -116,21 +108,16 @@ class AdaptiveTargetEngine {
         final actualShift = targetMins - finalMinutes;
 
         nextTarget = _dateTimeWithMinutes(currentTargetWakeTime, finalMinutes);
-        final goalFormatted = _formatMinutes(goalMins);
-        decisionNote = ShiftDecisionNote(
-          rule: ShiftDecisionRule.caseB1OnTimeRamp,
-          shiftMinutes: -actualShift,
+        decisionNote = ShiftCalculator.generateCaseB1RampNote(
           deltaOversleepMinutes: deltaOversleep,
-          note:
-              'Target met. Advancing wake time by -$actualShift min toward goal of $goalFormatted.',
+          shiftMinutes: -actualShift,
+          goalWakeMinutesFromMidnight: goalMins,
         );
       } else {
         nextTarget = currentTargetWakeTime;
-        decisionNote = ShiftDecisionNote(
-          rule: ShiftDecisionRule.caseB1GoalReached,
-          shiftMinutes: 0,
+        decisionNote = ShiftCalculator.generateCaseB1GoalReachedNote(
           deltaOversleepMinutes: deltaOversleep,
-          note: 'Goal wake time already reached and maintained.',
+          goalWakeMinutesFromMidnight: goalMins,
         );
       }
     }
@@ -158,14 +145,11 @@ class AdaptiveTargetEngine {
         finalTargetMinutes % (24 * 60),
       );
 
-      final onsetFormatted =
-          '${sleepOnsetTime.hour.toString().padLeft(2, '0')}:${sleepOnsetTime.minute.toString().padLeft(2, '0')}';
-      decisionNote = ShiftDecisionNote(
-        rule: ShiftDecisionRule.caseCLateOnsetOverride,
-        shiftMinutes: shift,
+      decisionNote = ShiftCalculator.generateCaseCNote(
         deltaOversleepMinutes: deltaOversleep,
-        note:
-            'Sleep onset was late ($onsetFormatted). Adjusted wake target to protect baseline sleep duration.',
+        shiftMinutes: shift,
+        sleepOnsetTime: sleepOnsetTime,
+        minSleepDurationMinutes: minSleepDurationMinutes,
       );
     }
 
@@ -185,11 +169,5 @@ class AdaptiveTargetEngine {
       hours,
       mins,
     );
-  }
-
-  String _formatMinutes(int minutesFromMidnight) {
-    final hours = (minutesFromMidnight ~/ 60) % 24;
-    final mins = minutesFromMidnight % 60;
-    return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
   }
 }

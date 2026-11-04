@@ -78,7 +78,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     flutter test test/engine/adaptive_target_engine_test.dart --coverage
     ```
 
-- [ ] **2.2 Timeline Shift Note Generator**
+- [x] **2.2 Timeline Shift Note Generator**
   - **Acceptance Criteria**: Deterministic string formatter generates human-readable explanations matching each adaptation decision with parameter tags.
   - **PowerShell Commands**:
     ```powershell
