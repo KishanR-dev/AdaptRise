@@ -45,7 +45,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat :app:assembleDebug
     ```
 
-- [ ] **1.6 Risk Spike R3: Dual Exact Alarm & Full-Screen Intent**
+- [x] **1.6 Risk Spike R3: Dual Exact Alarm & Full-Screen Intent**
   - **Acceptance Criteria**: `AlarmManager.setExactAndAllowWhileIdle()` schedules both wake window trigger and hard deadline; `FullScreenAlarmActivity` turns screen on over keyguard with ringtone in Doze mode.
   - **PowerShell Commands**:
     ```powershell

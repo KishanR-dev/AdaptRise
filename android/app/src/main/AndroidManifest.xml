@@ -36,6 +36,26 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".alarm.FullScreenAlarmActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
+
+        <service
+            android:name=".alarm.WakeWindowForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+
+        <receiver
+            android:name=".alarm.WakeWindowReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".alarm.HardDeadlineReceiver"
+            android:exported="false" />
+
         <service
             android:name=".wear.PhoneWearableListenerService"
             android:exported="true">
