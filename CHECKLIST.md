@@ -146,7 +146,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     flutter analyze
     ```
 
-- [ ] **3.5 Stock Clock Backup Alarm Trigger**
+- [x] **3.5 Stock Clock Backup Alarm Trigger**
   - **Acceptance Criteria**: Triggers `AlarmClock.ACTION_SET_ALARM` intent for deadline wake time if user opted in; UI clearly notes manual cancellation requirement.
   - **PowerShell Commands**:
     ```powershell

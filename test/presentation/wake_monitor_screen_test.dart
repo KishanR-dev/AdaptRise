@@ -68,10 +68,7 @@ void main() {
       expect(warningActionCalled, isTrue);
 
       // Scroll to make denied action button visible
-      await tester.scrollUntilVisible(
-        find.text('Disable Optimization'),
-        200.0,
-      );
+      await tester.scrollUntilVisible(find.text('Disable Optimization'), 200.0);
       await tester.pumpAndSettle();
 
       // Test denied action button
