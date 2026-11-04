@@ -139,7 +139,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     flutter test test/presentation/timeline_screen_test.dart
     ```
 
-- [ ] **3.4 Wake Monitor & Permission Diagnostics Hub**
+- [x] **3.4 Wake Monitor & Permission Diagnostics Hub**
   - **Acceptance Criteria**: Live status of Health Connect, Exact Alarm, Samsung Battery Optimization, and Wear pairing with direct deep links to One UI system settings.
   - **PowerShell Commands**:
     ```powershell
