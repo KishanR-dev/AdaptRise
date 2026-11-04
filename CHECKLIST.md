@@ -65,7 +65,7 @@ All automated tests and builds must be executed and pasted into agent reports be
 
 ## Phase 2: Day 2 Core Engine, Kotlin Detector & Calibration (Deadline: Thu 5 Nov 2026)
 
-- [ ] **2.1 Pure Dart Adaptive Target Engine**
+- [x] **2.1 Pure Dart Adaptive Target Engine**
   - **Acceptance Criteria**: Implementation in `lib/domain/engine/adaptive_target_engine.dart` handles:
     - Case A: Overslept ($\Delta > \epsilon_{grace}$) $\to$ shift $+ \min(\Delta, \Delta_{max})$
     - Case B.1: On-time / mild early $\to$ ramp $- R_{ramp}$ toward $T_{goal}$
