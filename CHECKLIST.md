@@ -125,7 +125,7 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat :wear:testDebugUnitTest
     ```
 
-- [ ] **3.2 Dual-Alarm Native Scheduling Integration**
+- [x] **3.2 Dual-Alarm Native Scheduling Integration**
   - **Acceptance Criteria**: Native alarm manager schedules guaranteed hard deadline alarm and wake window trigger simultaneously at arming; detector early firing cancels deadline alarm; disconnection leaves deadline alarm untouched.
   - **PowerShell Commands**:
     ```powershell
