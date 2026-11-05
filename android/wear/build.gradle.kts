@@ -38,6 +38,11 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        // ComponentActivity is used without fragments; suppress false-positive FragmentActivity check
+        disable += "InvalidFragmentVersionForActivityResult"
+    }
 }
 
 dependencies {
