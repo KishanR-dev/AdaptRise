@@ -175,14 +175,14 @@ All automated tests and builds must be executed and pasted into agent reports be
     .\gradlew.bat test
     ```
 
-- [ ] **4.2 Comprehensive Project README**
+- [x] **4.2 Comprehensive Project README**
   - **Acceptance Criteria**: Contains architecture Mermaid diagram, "Obsidian Dawn" UI walkthrough, documented detector heuristic and calibration notes, honest limitations (backup alarm manual cancel, Samsung Health sync latency), and zero AI attribution.
   - **PowerShell Commands**:
     ```powershell
     Test-Path README.md
     ```
 
-- [ ] **4.3 GitHub Actions CI Workflow**
+- [x] **4.3 GitHub Actions CI Workflow**
   - **Acceptance Criteria**: GitHub Actions workflow builds debug APK, runs Flutter analyzer, executes Dart unit tests with coverage, and compiles Wear OS module on `ubuntu-latest`.
   - **PowerShell Commands**:
     ```powershell
