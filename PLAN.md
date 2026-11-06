@@ -17,53 +17,53 @@ The project targets a showcase release on GitHub by **Saturday, 7 November 2026*
 ```mermaid
 flowchart TD
     subgraph Watch ["Samsung Galaxy Watch 4 (Wear OS 4+ Native Kotlin)"]
-        W_FGS["WearSensorStreamingService\n(FGS Type: health)"]
-        W_Sensors["SensorManager / Health Services\n(Accelerometer + PPG Heart Rate)"]
-        W_Accumulator["EpochWindowAccumulator\n(5s Movement Variance + Mean HR)"]
-        W_DataLayer["Wearable Data Layer\n(MessageClient / ChannelClient)"]
-        W_AlarmUI["Custom Alarm Face UI\n(Compose for Wear OS + Gentle Haptic Ramp)"]
+        W_FGS["WearSensorStreamingService<br/>(FGS Type: health)"]
+        W_Sensors["SensorManager / Health Services<br/>(Accelerometer + PPG Heart Rate)"]
+        W_Accumulator["EpochWindowAccumulator<br/>(5s Movement Variance + Mean HR)"]
+        W_DataLayer["Wearable Data Layer<br/>(MessageClient / ChannelClient)"]
+        W_AlarmUI["Custom Alarm Face UI<br/>(Compose for Wear OS + Gentle Haptic Ramp)"]
 
         W_FGS --> W_Sensors
         W_Sensors --> W_Accumulator
         W_Accumulator --> W_DataLayer
-        W_DataLayer -.->|Dismiss / Snooze Sync| W_AlarmUI
+        W_DataLayer -.->|"Dismiss / Snooze Sync"| W_AlarmUI
     end
 
     subgraph Phone_Native ["Samsung Galaxy S24 Ultra (Native Android / Kotlin)"]
-        P_AlarmMgr["AlarmManager\n(setExactAndAllowWhileIdle)"]
-        P_HardAlarm["Guaranteed Hard Deadline Alarm\n(Scheduled At Arming)"]
-        P_WindowAlarm["Wake Window Trigger Alarm\n(T_target - WakeWindowMinutes)"]
-        P_FGS["WakeWindowForegroundService\n(FGS Types: connectedDevice | specialUse)"]
-        P_DataLayer["PhoneWearableListenerService\n(Wear Data Layer Ingress)"]
-        P_Detector["SmartWakeDetector (Native Kotlin)\n(Rolling Thresholds, Quarantine, Early Trigger)"]
-        P_HC["Health Connect Bridge\n(Read Historical SleepSessionRecord & Stages)"]
-        P_FSI["FullScreenAlarmActivity\n(Keyguard Dismiss, Audio Ramp & Haptics)"]
-        P_Bridge["AdaptRisePigeonBridge\n(Flutter Platform Channel Bridge)"]
+        P_AlarmMgr["AlarmManager<br/>(setExactAndAllowWhileIdle)"]
+        P_HardAlarm["Guaranteed Hard Deadline Alarm<br/>(Scheduled At Arming)"]
+        P_WindowAlarm["Wake Window Trigger Alarm<br/>(T_target - WakeWindowMinutes)"]
+        P_FGS["WakeWindowForegroundService<br/>(FGS Types: connectedDevice or specialUse)"]
+        P_DataLayer["PhoneWearableListenerService<br/>(Wear Data Layer Ingress)"]
+        P_Detector["SmartWakeDetector (Native Kotlin)<br/>(Rolling Thresholds, Quarantine, Early Trigger)"]
+        P_HC["Health Connect Bridge<br/>(Read Historical SleepSessionRecord & Stages)"]
+        P_FSI["FullScreenAlarmActivity<br/>(Keyguard Dismiss, Audio Ramp & Haptics)"]
+        P_Bridge["AdaptRisePigeonBridge<br/>(Flutter Platform Channel Bridge)"]
 
-        P_AlarmMgr -->|At Arming: Sets Deadline| P_HardAlarm
-        P_AlarmMgr -->|At Arming: Sets Window Start| P_WindowAlarm
+        P_AlarmMgr -->|"At Arming: Sets Deadline"| P_HardAlarm
+        P_AlarmMgr -->|"At Arming: Sets Window Start"| P_WindowAlarm
         P_WindowAlarm -->|Triggers| P_FGS
-        P_FGS <-->|Start / Stop Telemetry| P_DataLayer
-        P_DataLayer -->|Sensor Epoch Packets| P_Detector
-        P_Detector -->|Light Sleep Detected (Early)| P_FSI
-        P_HardAlarm -->|Hard Deadline Reached| P_FSI
-        P_Detector -.->|Early Trigger Cancels Hard Deadline| P_HardAlarm
-        P_HC -->|Past Sessions| P_Bridge
-        P_FGS -->|Window Events / Metrics Summary| P_Bridge
+        P_FGS <-->|"Start / Stop Telemetry"| P_DataLayer
+        P_DataLayer -->|"Sensor Epoch Packets"| P_Detector
+        P_Detector -->|"Light Sleep Detected (Early)"| P_FSI
+        P_HardAlarm -->|"Hard Deadline Reached"| P_FSI
+        P_Detector -.->|"Early Trigger Cancels Hard Deadline"| P_HardAlarm
+        P_HC -->|"Past Sessions"| P_Bridge
+        P_FGS -->|"Window Events / Metrics Summary"| P_Bridge
     end
 
     subgraph Phone_Flutter ["Flutter Application (Dart Showcase Layer)"]
-        F_Bridge["Native Platform Bridge\n(Generated Pigeon Client)"]
-        F_Engine["Adaptive Target Engine (Pure Dart)\n(Deterministic Shift Logic & Note Generator)"]
-        F_Storage["Local Storage Layer\n(Drift / SQLite Database)"]
-        F_UI["Obsidian & Amber Dawn UI\n(Timeline, Monitor, Permissions, Settings)"]
+        F_Bridge["Native Platform Bridge<br/>(Generated Pigeon Client)"]
+        F_Engine["Adaptive Target Engine (Pure Dart)<br/>(Deterministic Shift Logic & Note Generator)"]
+        F_Storage["Local Storage Layer<br/>(Drift / SQLite Database)"]
+        F_UI["Obsidian & Amber Dawn UI<br/>(Timeline, Monitor, Permissions, Settings)"]
 
         F_Bridge <--> F_Engine
         F_Engine --> F_Storage
         F_Storage --> F_UI
     end
 
-    W_DataLayer <===>|Bluetooth / Wi-Fi Wear Data Layer| P_DataLayer
+    W_DataLayer <-->|"Bluetooth / Wi-Fi Wear Data Layer"| P_DataLayer
 ```
 
 ---
